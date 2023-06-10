@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var dayMode: Bool = true
+    
+    @State private var isNight = false
     
     var body: some View {
         ZStack {
-            BackgroundView(topColor: dayMode ? .blue : .black,
-                           bottomColor: dayMode ? Color("lightBlue") : .gray)
+            BackgroundView(isNight: isNight)
             VStack {
                 CityTextView(cityName: "Cupertino, CA")
                    
-                MainWeatherStatusView(imageName: "cloud.sun.fill", temperature: 76)
+                MainWeatherStatusView(imageName: isNight ? "moon.stars.fill": "cloud.sun.fill", temperature: 76)
                 
                 HStack(spacing: 10) {
                     WeatherDayView(day: "TUE", symbol: "cloud.rain.fill", degrees: "75°")
@@ -31,10 +31,9 @@ struct ContentView: View {
                 Spacer()
                 
                 Button {
-                    dayMode.toggle()
-                    print("tapped")
+                    isNight.toggle()
                 } label: {
-                    WeatherButton(title: dayMode ? "Change Night Time" : "Change Day Time", textColor: .blue, backgroundColor: .white)
+                    WeatherButton(title: "Change Day Time", textColor: .blue, backgroundColor: .white)
                 }
                 
                 Spacer()
@@ -60,7 +59,7 @@ struct WeatherDayView: View {
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(.white)
             Image(systemName: symbol)
-                .renderingMode(.original)
+                .symbolRenderingMode(.multicolor)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 40, height: 40)
@@ -73,14 +72,15 @@ struct WeatherDayView: View {
 }
 
 struct BackgroundView: View {
-    var topColor: Color
-    var bottomColor: Color
+    
+    var isNight: Bool
     
     var body: some View {
-        LinearGradient(gradient: Gradient(colors: [topColor,bottomColor]),
+        LinearGradient(gradient: Gradient(colors: [isNight ? .black : .blue,
+                                                   isNight ? .gray : Color("lightBlue")]),
                        startPoint: .topLeading,
                        endPoint: .bottomTrailing)
-            .edgesIgnoringSafeArea(.all)
+            .ignoresSafeArea()
     }
 }
 
